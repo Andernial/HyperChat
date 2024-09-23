@@ -1,14 +1,16 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Groq } from "groq-sdk";
 
 
 
 function App() {
   const [input, setInput] = useState('');
+  const [requestLoading, setRequestLoading] = useState(false)
   const [generatedResponse, setResponse] = useState([])
 
   const runTransformer = async () => {
     try {
+      setRequestLoading(true)
       const groq = new Groq({
         apiKey: process.env.GROQ_API_KEY,
         dangerouslyAllowBrowser: true,
@@ -24,18 +26,30 @@ function App() {
       });
       const newContent = { response: chatCompletion.choices[0]?.message?.content, question: input }
       setResponse((prevGen) => [...prevGen, newContent,]);
+      setInput('')
       console.log(generatedResponse);
     } catch (error) {
       alert('erro na api ' + error + ' :(')
+    }finally{
+      setRequestLoading(false)
     }
 
   };
 
   const handleChange = (e) => {
     setInput(e.target.value)
-
+    
 
   }
+
+
+  useEffect(() => {
+    const elements = document.querySelectorAll('.fade-in');
+    elements.forEach((el) => {
+      el.style.opacity = 1;
+      el.style.transform = 'translateY(0)';
+    });
+  }, [generatedResponse]);
 
 
   return (
@@ -45,16 +59,16 @@ function App() {
           <h1 className=" text-3xl">HyperChat</h1>
           <img src="" alt="git icon" />
         </header>
-        <div className="container mx-auto overflow-y-scroll text-white" style={{ maxHeight: '70svh', minHeight: '70svh' }}>
+        <div className="container mx-auto overflow-y-scroll text-white mt-20" style={{ maxHeight: '60svh', minHeight: '60svh' }}>
           {generatedResponse.map((resp, idx) => (
-            <div key={idx} className="mb-4">
-              <div className="flex justify-end">
+            <div key={idx} className="fade-in mb-4" style={{ opacity: 0, transform: 'translateY(20px)', transition: 'opacity 0.5s ease-out, transform 0.5s ease-out' }}>
+              <div className="flex justify-end m-2">
                 <div className="bg-slate-600 text-white p-3 rounded-lg max-w-xs text-right">
                   <p className="m-0">{resp.question}</p>
                 </div>
               </div>
 
-              <div className="flex justify-start mt-2">
+              <div className="flex justify-start m-2">
                 <div className="bg-green-600 text-white p-3 rounded-lg max-w-xs text-left">
                   <p className="m-0">{resp.response}</p>
                 </div>
@@ -64,8 +78,8 @@ function App() {
         </div>
 
         <div className="grid grid-cols-[1fr_auto] items-center gap-4 m-2">
-          <input onChange={handleChange} value={input} className="rounded-md p-2 border border-gray-300" type="text" placeholder="Escreva Sua Mensagem" />
-          <button className="bg-green-400 p-2 rounded" onClick={runTransformer}>Enviar</button>
+          <input onKeyDown={(e) =>{if(e.key === 'Enter'){runTransformer()}}} onChange={handleChange} value={input} className="rounded-md p-2 border border-gray-300" type="text" placeholder="Escreva Sua Mensagem" disabled={requestLoading} />
+          <button className="bg-green-400 p-2 rounded hover:bg-green-500 transform hover:scale-105 transition-transform duration-200" onClick={runTransformer} disabled={requestLoading} >Enviar</button>
         </div>
       </div>
     </>
