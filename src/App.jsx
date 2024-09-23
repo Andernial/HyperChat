@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Groq } from "groq-sdk";
 
 
@@ -7,6 +7,9 @@ function App() {
   const [input, setInput] = useState('');
   const [requestLoading, setRequestLoading] = useState(false)
   const [generatedResponse, setResponse] = useState([])
+
+
+  const messagesEndRef = useRef(null);
 
   const runTransformer = async () => {
     try {
@@ -49,6 +52,10 @@ function App() {
       el.style.opacity = 1;
       el.style.transform = 'translateY(0)';
     });
+
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
   }, [generatedResponse]);
 
 
@@ -61,7 +68,7 @@ function App() {
         </header>
         <div className="container mx-auto overflow-y-scroll text-white mt-20" style={{ maxHeight: '60svh', minHeight: '60svh' }}>
           {generatedResponse.map((resp, idx) => (
-            <div key={idx} className="fade-in mb-4" style={{ opacity: 0, transform: 'translateY(20px)', transition: 'opacity 0.5s ease-out, transform 0.5s ease-out' }}>
+            <div key={idx} ref={messagesEndRef} className="fade-in mb-4" style={{ opacity: 0, transform: 'translateY(20px)', transition: 'opacity 0.5s ease-out, transform 0.5s ease-out' }}>
               <div className="flex justify-end m-2">
                 <div className="bg-slate-600 text-white p-3 rounded-lg max-w-xs text-right">
                   <p className="m-0">{resp.question}</p>
