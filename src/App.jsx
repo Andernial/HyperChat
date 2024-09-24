@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Groq } from "groq-sdk";
-
-
+import "./index.css"
+import gitLogo from "./assets/images/giticon.svg"
 
 function App() {
   const [input, setInput] = useState('');
@@ -62,9 +62,9 @@ function App() {
   return (
     <>
       <div className="w-full min-h-svh flex items-center flex-col bg-cyan-950">
-        <header className=" h-12 w-full flex items-center justify-around text-green-400">
+        <header className=" h-24 w-full flex items-center justify-around text-green-400">
           <h1 className=" text-3xl">HyperChat</h1>
-          <img src="" alt="git icon" />
+          <a href="https://github.com/Andernial/HyperChat" target="_blank" ><img src={gitLogo} alt="git icon" className=" w-20 h-20" /></a>
         </header>
         <div className="container mx-auto overflow-y-scroll text-white mt-20" style={{ maxHeight: '60svh', minHeight: '60svh' }}>
           {generatedResponse.map((resp, idx) => (
